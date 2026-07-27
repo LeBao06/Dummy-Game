@@ -138,4 +138,4 @@ func _change_to_room_lobby() -> void:
 	
 	# Change scene to your Room Lobby file
 	# (Change the path below to match your actual RoomLobby.tscn location)
-	get_tree().change_scene_to_file("res://tests/main_test.tscn")
+	get_tree().change_scene_to_file("res://scenes/main_room/main_game.tscn")
