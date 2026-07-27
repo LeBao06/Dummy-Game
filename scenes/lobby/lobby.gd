@@ -32,7 +32,7 @@ func _on_create_pressed() -> void:
 	var room_name = name_input.text if not name_input.text.is_empty() else "Default Room"
 	var err := NetworkManager.create_game(room_name)
 	if err == OK:
-		get_tree().change_scene_to_file("res://tests/main_test.tscn")
+		get_tree().change_scene_to_file("res://scenes/waiting_room/main_test.tscn")
 
 func _on_join_pressed() -> void:
 	var selected := room_list.get_selected_items()
@@ -58,7 +58,7 @@ func _on_connection_succeeded() -> void:
 		return
 	is_joining = false
 	join_button.disabled = false
-	get_tree().change_scene_to_file("res://tests/main_test.tscn")
+	get_tree().change_scene_to_file(Constants.WAITING_ROOM)
 
 func _on_connection_failed() -> void:
 	if not is_joining:

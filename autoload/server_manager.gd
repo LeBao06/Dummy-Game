@@ -5,7 +5,27 @@ var num_impostors: int = 1
 # Number of tasks assigned to each Crewmate per match
 var tasks_per_crewmate: int = 2
 
+func _on_peer_disconnected(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	PlayerManager.unregister_player(peer_id)
+	_sync_players_state(PlayerManager.players_state)
 
+# Emits signal whenever a player left, run _on_peer_disconnected
+func _ready() -> void:
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+
+# ==========================================
+# READY STATE (LOBBY)
+# ==========================================
+
+##
+func request_local_ready(is_ready:bool) -> void:
+	var my_id = multiplayer.get_unique_id()
+	if multiplayer.is_server():
+		_apply_ready(my_id, is_ready)
+	else:
+		_request_set_ready.rpc_id(1, my_id, is_ready)
 # ==========================================
 # MATCH (MAIN LOOP)
 # ==========================================
@@ -25,8 +45,7 @@ func start_match() -> void:
 	_reset_match_state(player_ids)
 	assign_roles(player_ids)
 	assign_tasks(player_ids)
-
-
+	
 ## Clears any leftover per-player match data from a previous round
 func _reset_match_state(player_ids: Array) -> void:
 	for id in player_ids:
@@ -169,3 +188,24 @@ func receive_task_list(task_ids: Array) -> void:
 	
 	# Emit a signal so the HUD / Task UI can refresh
 	TaskManager.client_tasks_updated.emit(task_resources)
+	
+@rpc("authority", "call_local", "reliable")
+func _sync_players_state(updated_state: Dictionary) -> void:
+	PlayerManager.players_state = updated_state
+	PlayerManager.players_state_updated.emit()
+		
+func all_players_ready() -> bool:
+	return PlayerManager.players_state.size() > 0 and PlayerManager.players_state.values().all(
+		func(p): return p.get("ready", false)
+	)
+	
+@rpc("any_peer", "reliable")
+func _request_set_ready(peer_id: int, is_ready: bool) -> void:
+		if not multiplayer.is_server():
+			return
+		_apply_ready(peer_id, is_ready)
+	
+func _apply_ready(peer_id: int, is_ready:bool) -> void:
+	PlayerManager.set_ready_state(peer_id, is_ready)
+	_sync_players_state(PlayerManager.players_state)
+	
