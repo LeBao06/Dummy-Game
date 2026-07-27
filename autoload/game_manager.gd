@@ -25,8 +25,10 @@ var current_state: Enums.GameState = Enums.GameState.LOBBY
 func _ready() -> void:
 	NetworkManager.player_disconnected.connect(_on_player_disconnected)
 	TaskManager.all_tasks_completed.connect(_on_all_tasks_completed)
-
-
+	state_changed.connect(_on_state_changed_debug_print)
+	
+func _on_state_changed_debug_print(new_state: Enums.GameState) -> void:
+	print("[GameManager] Peer %d — state changed to: %s" % [multiplayer.get_unique_id(), Enums.GameState.keys()[new_state]])
 # ==========================================
 # --- SERVER-AUTHORITATIVE STATE CONTROL ---
 # ==========================================

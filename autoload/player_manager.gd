@@ -1,7 +1,8 @@
 extends Node
-
+@warning_ignore("UNUSED_SIGNAL")
 signal role_assigned(role: Enums.Role)
 signal players_state_updated
+
 
 # Local player's data (the player sitting in front of this screen)
 var local_player_data: Dictionary = {

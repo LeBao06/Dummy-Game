@@ -1,9 +1,12 @@
 extends Node2D
 
-@onready var ready_button: Button = $HUD/Container/ReadyButton
-@onready var start_button: Button = $HUD/Container/StartButton
-@onready var player_list_container: VBoxContainer = $HUD/Container/PlayerListContainer
+@onready var ready_button: Button = $LobbyUI/Container/ReadyButton
+@onready var start_button: Button = $LobbyUI/Container/StartButton
+@onready var player_list_container: VBoxContainer = $LobbyUI/Container/PlayerListContainer
+@onready var scene_container: Node2D = $SceneContainer
 
+const LOBBY_SCENE := preload("res://scenes/waiting_room/lobby_scene.tscn")
+## const GAMEPLAY_SCENE := preload("res://scenes/gameplay_room/gameplay.tscn") 
 
 func _ready() -> void:
 	ready_button.pressed.connect(_on_ready_pressed)
@@ -15,8 +18,25 @@ func _ready() -> void:
 	PlayerManager.players_state_updated.connect(_update_ui)
 
 	_update_ui()
+	GameManager.state_changed.connect(_on_state_changed)
+	load_scene(LOBBY_SCENE)   # start in the lobby
 
 
+#swap lobby and gameplay
+func load_scene(packed_scene: PackedScene) -> void:
+	for child in scene_container.get_children():
+		child.queue_free()
+	var instance = packed_scene.instantiate()
+	scene_container.add_child(instance)
+	print("[Main] Peer %d — loaded scene: %s" % [multiplayer.get_unique_id(), packed_scene.resource_path])
+
+
+func _on_state_changed(new_state: Enums.GameState) -> void:
+	match new_state:
+		Enums.GameState.LOBBY:
+			load_scene(LOBBY_SCENE)
+##		Enums.GameState.PLAYING:
+##			load_scene(GAMEPLAY_SCENE)
 func _on_ready_pressed() -> void:
 	ready_button.disabled = true
 	ServerManager.request_local_ready(true)

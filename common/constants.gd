@@ -43,10 +43,10 @@ const SKIP_VOTE: int = -1
 
 # --- SCENES --- 
 ## Scene paths so we don't have to change every code once we named scenes
-const WAITING_ROOM = "res://scenes/waiting_room/main_test.tscn"
-const TILE_WAITING_ROOM = "res://waiting_room/lobby.tscn"
+const WAITING_ROOM = "res://scenes/waiting_room/lobby_scene.tscn"
+
 
 const GAMEPLAY_SCENE = "res://scenes/game_room/main_game.tscn"
 
-const SEARCH_LOBBY = "res://scenes/lobby/lobby.tscn"
+const SEARCH_LOBBY = "res://scenes/lobby_menu/lobby_menu.tscn"
 const MAIN_MENU = "res://scenes/main_menu/main_menu.tscn"

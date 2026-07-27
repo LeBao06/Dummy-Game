@@ -1,12 +1,34 @@
 [gd_scene format=3 uid="uid://j4brs24hrewh"]
 
-[ext_resource type="Script" uid="uid://demydplk6cjin" path="res://scenes/waiting_room/multiplayer_spawner.gd" id="1_dgpx4"]
+[ext_resource type="Script" uid="uid://drfowa301w48q" path="res://scenes/main_room/main_game.gd" id="1_cwqi1"]
+[ext_resource type="Script" uid="uid://demydplk6cjin" path="res://scenes/main_room/multiplayer_spawner.gd" id="1_dgpx4"]
 [ext_resource type="PackedScene" uid="uid://bycqqn40d3ngn" path="res://entities/player/player.tscn" id="2_cwqi1"]
 
 [node name="MainGame" type="Node2D" unique_id=1745043348]
+script = ExtResource("1_cwqi1")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1179994567]
 _spawnable_scenes = PackedStringArray("uid://bycqqn40d3ngn")
 spawn_path = NodePath("..")
 script = ExtResource("1_dgpx4")
 network_player = ExtResource("2_cwqi1")
+
+[node name="LobbyUI" type="CanvasLayer" parent="." unique_id=1188591432]
+
+[node name="Container" type="VBoxContainer" parent="LobbyUI" unique_id=438828529]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StartButton" type="Button" parent="LobbyUI/Container" unique_id=977505485]
+layout_mode = 2
+text = "Start
+"
+
+[node name="ReadyButton" type="Button" parent="LobbyUI/Container" unique_id=2015799275]
+layout_mode = 2
+text = "Ready"
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="LobbyUI/Container" unique_id=264218524]
+layout_mode = 2
+
+[node name="SceneContainer" type="Node2D" parent="." unique_id=975847748]
