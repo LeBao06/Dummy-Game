@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://clrf5qn4ypjja"]
+
+[ext_resource type="Script" uid="uid://ch4wjqhd682fd" path="res://scenes/lobby_menu/lobby_menu.gd" id="1_hvdr7"]
+
+[node name="LobbyMenu" type="Control" unique_id=118978294]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hvdr7")
+
+[node name="Panel" type="Panel" parent="." unique_id=41122213]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=464522830]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=1378477131]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=1725671124]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "LOBBY MENU"
+horizontal_alignment = 1
+
+[node name="HostSection" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1461241615]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HostButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/HostSection" unique_id=2068465679]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "Tạo Phòng"
+
+[node name="RoomNameEdit" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/HostSection" unique_id=2037352891]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 40)
+layout_mode = 2
+placeholder_text = "Nhập tên phòng ..."
+
+[node name="DirectJoinSection" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1159979326]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="JoinButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/DirectJoinSection" unique_id=1810566522]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "Tham gia vào"
+
+[node name="IPEdit" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/DirectJoinSection" unique_id=414310882]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 40)
+layout_mode = 2
+placeholder_text = "Nhập IP phòng muốn vào ..."
+expand_to_text_length = true
+
+[node name="LANSection" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1989628258]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer/LANSection" unique_id=35447958]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LANLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/LANSection/Header" unique_id=1408943421]
+custom_minimum_size = Vector2(500, 40)
+layout_mode = 2
+text = "Phòng trong mạng LAN"
+vertical_alignment = 1
+
+[node name="RefreshButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/LANSection/Header" unique_id=376048954]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "Làm mới"
+
+[node name="RoomList" type="ItemList" parent="Panel/MarginContainer/VBoxContainer/LANSection" unique_id=722376287]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/LANSection" unique_id=1093082858]
+unique_name_in_owner = true
+layout_mode = 2

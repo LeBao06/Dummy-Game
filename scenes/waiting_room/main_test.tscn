@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://kr868ruuhbfx"]
+
+[ext_resource type="Script" uid="uid://drfowa301w48q" path="res://scenes/waiting_room/main_test.gd" id="1_64sjs"]
+[ext_resource type="Script" uid="uid://demydplk6cjin" path="res://scenes/waiting_room/multiplayer_spawner.gd" id="1_bj4ok"]
+[ext_resource type="PackedScene" uid="uid://bycqqn40d3ngn" path="res://entities/player/player.tscn" id="2_64sjs"]
+[ext_resource type="PackedScene" uid="uid://fpmkinylvetw" path="res://scenes/waiting_room/lobby.tscn" id="4_64sjs"]
+
+[node name="MainTest" type="Node2D" unique_id=603326438]
+script = ExtResource("1_64sjs")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2081974042]
+_spawnable_scenes = PackedStringArray("uid://bycqqn40d3ngn")
+spawn_path = NodePath("..")
+script = ExtResource("1_bj4ok")
+network_player = ExtResource("2_64sjs")
+
+[node name="Lobby" parent="." unique_id=916647507 instance=ExtResource("4_64sjs")]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=526632040]
+
+[node name="Container" type="VBoxContainer" parent="HUD" unique_id=540211387]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StartButton" type="Button" parent="HUD/Container" unique_id=1978794416]
+layout_mode = 2
+text = "Start
+"
+
+[node name="ReadyButton" type="Button" parent="HUD/Container" unique_id=1074716851]
+layout_mode = 2
+text = "Ready"
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="HUD/Container" unique_id=355492623]
+layout_mode = 2

@@ -40,3 +40,13 @@ const DISCOVERY_PING: String = "ROOM_DISCOVERY_PING"
 ## Sentinel value used in place of a peer ID to represent an explicit
 ## "skip" vote during meetings, instead of casting for a player.
 const SKIP_VOTE: int = -1
+
+# --- SCENES --- 
+## Scene paths so we don't have to change every code once we named scenes
+const WAITING_ROOM = "res://scenes/waiting_room/main_test.tscn"
+const TILE_WAITING_ROOM = "res://waiting_room/lobby.tscn"
+
+const GAMEPLAY_SCENE = "res://scenes/game_room/main_game.tscn"
+
+const SEARCH_LOBBY = "res://scenes/lobby/lobby.tscn"
+const MAIN_MENU = "res://scenes/main_menu/main_menu.tscn"

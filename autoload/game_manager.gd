@@ -39,8 +39,8 @@ func request_start_match() -> void:
 		push_warning("[GameManager] Cannot start match, current state is not LOBBY.")
 		return
 
-	ServerManager.start_match()
-	_set_state(Enums.GameState.PLAYING)
+	ServerManager.start_match() ## Assigns roles/tasks
+	_set_state(Enums.GameState.PLAYING) ## triggers scene change
 
 
 ## Called when an emergency meeting / report is triggered.
@@ -129,6 +129,32 @@ func _on_player_disconnected(_id: int) -> void:
 		push_warning("[GameManager] Not enough players remaining, aborting match.")
 		return_to_lobby()
 
+# ==========================================
+# --- SCENE TRANSISTION --- 
+# ==========================================
+
+
+## Maps a GameState to the scene that should be loaded for it, if any.
+## Returns "" for states that don't involve a scene change (MEETING/VOTING/
+## GAME_OVER might just show an overlay on top of gameplay.tscn instead).
+
+func _scene_for_state(state: Enums.GameState) -> String:
+	match state:
+		Enums.GameState.LOBBY:
+			return Constants.WAITING_ROOM
+		Enums.GameState.PLAYING:
+			return Constants.GAMEPLAY_SCENE
+		_:
+			return "" # MEETING, VOTING, GAME_OVER: handled as overlays, no scene swap
+			
+			
+## Called on every peer (host included) whenever state changes, right
+## after state_changed is emitted. Keeps this in one place so neither
+## _set_state nor _receive_state need to duplicate the scene logic.
+func _apply_scene_for_state(state: Enums.GameState) -> void:
+	var target_scene := _scene_for_state(state)
+	if target_scene != "":
+		get_tree().change_scene_to_file(target_scene)
 
 # ==========================================
 # --- NETWORK SYNC (state + result broadcast to clients) ---
@@ -137,12 +163,13 @@ func _on_player_disconnected(_id: int) -> void:
 func _set_state(new_state: Enums.GameState) -> void:
 	current_state = new_state
 	state_changed.emit(new_state)
-
+	_apply_scene_for_state(new_state)
+	
 	if not multiplayer.is_server():
 		return
 
 	for id in PlayerManager.players_state.keys():
-		if id == ServerManager.HOST_ID:
+		if id == Constants.HOST_ID:
 			continue
 		rpc_id(id, "_receive_state", new_state)
 
@@ -154,7 +181,7 @@ func _broadcast_match_ended(result: Enums.GameResult) -> void:
 		return
 
 	for id in PlayerManager.players_state.keys():
-		if id == ServerManager.HOST_ID:
+		if id == Constants.HOST_ID:
 			continue
 		rpc_id(id, "_receive_match_ended", result)
 
@@ -163,6 +190,7 @@ func _broadcast_match_ended(result: Enums.GameResult) -> void:
 func _receive_state(new_state: Enums.GameState) -> void:
 	current_state = new_state
 	state_changed.emit(new_state)
+	_apply_scene_for_state(new_state)
 
 
 @rpc("authority", "call_remote", "reliable")
