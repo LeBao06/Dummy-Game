@@ -53,12 +53,11 @@ func _update_ui() -> void:
 		child.queue_free()
 
 	for id in PlayerManager.players_state:
-		var data: Dictionary = PlayerManager.players_state[id]
 		var label := Label.new()
-		var status := "✅ Ready" if data.get("ready", false) else "⏳ Not Ready"
-		var display_name: String = data.get("name", "Player %d" % id)
+		var status := "✅ Ready" if PlayerManager.is_player_ready(id) else "⏳ Not Ready"
+		var display_name: String = "Player ID: %d" % id
 		label.text = "%s - %s" % [display_name, status]
 		player_list_container.add_child(label)
 
 	if multiplayer.is_server():
-		start_button.disabled = not ServerManager.all_players_ready()
+		start_button.disabled = not PlayerManager.all_players_ready()

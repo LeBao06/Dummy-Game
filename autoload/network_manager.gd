@@ -32,9 +32,8 @@ func create_game(p_room_name: String = "Default Room") -> Error:
 	RoomDiscoveryManager.start_broadcasting(p_room_name)
 	
 	# Since the Host is also a player, register the host locally immediately
-	var host_id = 1
-	PlayerManager.register_player(host_id, PlayerManager.get_local_network_data())
-	player_connected.emit(host_id, PlayerManager.get_local_network_data())
+	PlayerManager.register_player(Constants.HOST_ID, PlayerManager.get_local_network_data())
+	player_connected.emit(Constants.HOST_ID, PlayerManager.get_local_network_data())
 	return OK
 
 ## Joins an existing game server using an IP address
