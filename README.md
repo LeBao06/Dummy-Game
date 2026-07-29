@@ -52,3 +52,4 @@ Follow these links to know how to set up & start contributing to **Dummy Game**.
 
 * [🗃️ PROJECT STRUCTURE](./docs/project_structure.md) - Our Project Structure Plan.
 * [🔏 GIT CONVENTION](./docs/git/git_convention.md) - To see how to write commit messages, etc.
+* [🆘 CODING CONVENTION](./docs/coding_convention.md) - To see how to write code efficiently, and avoid silent runtime errors (useful for AI assistance)

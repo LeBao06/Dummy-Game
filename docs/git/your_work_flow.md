@@ -65,6 +65,9 @@ git stash
 
 # Re-apply your saved changes back to your working directory and remove them from the stash list
 git stash pop
+
+# Or remove completely (use when you dont need your old changes anymore)
+git stash drop
 ```
 
 ## NEXT STEP:
