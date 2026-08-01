@@ -4,24 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://c8m5vfupbg04o" path="res://assets/textures/w_l_2.png" id="4_fkugw"]
 [ext_resource type="Texture2D" uid="uid://bqw7325hki7wk" path="res://assets/textures/w_l_3.png" id="5_8fjmc"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fkugw"]
-radius = 24.0
-height = 74.0
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wvtmh"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 2
-properties/1/path = NodePath("AnimatedSprite2D:animation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath("AnimatedSprite2D:flip_h")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath("AnimatedSprite2D:flip_v")
-properties/3/spawn = true
-properties/3/replication_mode = 1
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_8ealr"]
 animations = [{
 "frames": [{
@@ -33,18 +15,27 @@ animations = [{
 }],
 "loop": 1,
 "name": &"walk",
-"speed": 5.0
+"speed": 8.0
 }]
 
-[node name="Player" type="CharacterBody2D" unique_id=1879362393]
-script = ExtResource("1_fkugw")
-metadata/_edit_group_ = true
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sglur"]
+size = Vector2(30, 14)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=610172096]
-light_mask = 2
-visibility_layer = 2
-position = Vector2(0, 1)
-shape = SubResource("CapsuleShape2D_fkugw")
+[sub_resource type="CircleShape2D" id="CircleShape2D_aodeh"]
+radius = 45.01111
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wvtmh"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:velocity")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+
+[node name="Player" type="CharacterBody2D" unique_id=1879362393]
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("1_fkugw")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1099105296]
 zoom = Vector2(1.21, 1.21)
@@ -52,10 +43,29 @@ position_smoothing_enabled = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1016075557]
-replication_config = SubResource("SceneReplicationConfig_wvtmh")
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2051914838]
 scale = Vector2(0.4, 0.407)
 sprite_frames = SubResource("SpriteFrames_8ealr")
 animation = &"walk"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=610172096]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(3, 29)
+shape = SubResource("RectangleShape2D_sglur")
+
+[node name="InteractionDetector" type="Area2D" parent="." unique_id=667185814]
+light_mask = 0
+visibility_layer = 0
+collision_layer = 0
+collision_mask = 12
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionDetector" unique_id=925805]
+top_level = true
+shape = SubResource("CircleShape2D_aodeh")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1016075557]
+replication_config = SubResource("SceneReplicationConfig_wvtmh")
+
+[connection signal="area_entered" from="InteractionDetector" to="." method="_on_interaction_detector_area_entered"]
+[connection signal="area_exited" from="InteractionDetector" to="." method="_on_interaction_detector_area_exited"]

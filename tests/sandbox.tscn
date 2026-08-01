@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://kr868ruuhbfx"]
+
+[ext_resource type="Script" uid="uid://cxn1cnerjqc6p" path="res://tests/task_test.gd" id="1_41f7g"]
+[ext_resource type="Texture2D" uid="uid://lvtmel51rvmw" path="res://icon.svg" id="2_vkueb"]
+[ext_resource type="PackedScene" uid="uid://bycqqn40d3ngn" path="res://entities/player/player.tscn" id="3_vkueb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8ealr"]
+size = Vector2(304, 276)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fb625"]
+size = Vector2(126, 123)
+
+[node name="Sandbox" type="Node2D" unique_id=1537662398]
+y_sort_enabled = true
+
+[node name="WallTest" type="StaticBody2D" parent="." unique_id=602131967]
+collision_mask = 0
+
+[node name="ColorRect" type="ColorRect" parent="WallTest" unique_id=1446701084]
+offset_right = 303.0
+offset_bottom = 275.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallTest" unique_id=864745513]
+position = Vector2(152, 138)
+shape = SubResource("RectangleShape2D_8ealr")
+
+[node name="GuideNote" type="Label" parent="WallTest" unique_id=449253269]
+offset_left = 3.0
+offset_top = -74.0
+offset_right = 306.0
+offset_bottom = 8.0
+text = "Đây là mô phỏng tường.
+Nhân vật ko thể đi xuyên tường."
+
+[node name="TaskTest" type="Area2D" parent="." unique_id=1849645909]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_41f7g")
+
+[node name="Sprite2D" type="Sprite2D" parent="TaskTest" unique_id=483947594]
+position = Vector2(574, 259)
+texture = ExtResource("2_vkueb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskTest" unique_id=1701952744]
+position = Vector2(574, 258.5)
+shape = SubResource("RectangleShape2D_fb625")
+
+[node name="GuideNote" type="Label" parent="TaskTest" unique_id=2014600641]
+offset_left = 444.0
+offset_top = 110.0
+offset_right = 704.0
+offset_bottom = 185.0
+text = "Đây là mô phỏng task.
+nhân vật đi gần lại đây và bấm phím E
+kết quả đc in ở phần Output"
+
+[node name="Player" parent="." unique_id=1879362393 instance=ExtResource("3_vkueb")]
