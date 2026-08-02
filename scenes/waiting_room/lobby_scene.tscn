@@ -1,17 +1,6 @@
 [gd_scene format=4 uid="uid://fpmkinylvetw"]
 
-[ext_resource type="Texture2D" uid="uid://tjmc8hpvumv5" path="res://assets/tilesets/ground level rework.png" id="1_gaqco"]
 [ext_resource type="Texture2D" uid="uid://c8di8ra8ffkap" path="res://assets/tilesets/PC _ Computer - Among Us - Backgrounds (The Skeld) - The Skeld_ Cafeteria.png" id="2_gaqco"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2wvic"]
-texture = ExtResource("1_gaqco")
-texture_region_size = Vector2i(60, 60)
-45:38/size_in_atlas = Vector2i(4, 3)
-45:38/0 = 0
-49:38/size_in_atlas = Vector2i(3, 3)
-49:38/0 = 0
-52:38/size_in_atlas = Vector2i(3, 3)
-52:38/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ww14p"]
 texture = ExtResource("2_gaqco")
@@ -35,17 +24,7 @@ texture_region_size = Vector2i(65, 65)
 tile_shape = 1
 tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_2wvic")
 sources/1 = SubResource("TileSetAtlasSource_ww14p")
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tftiq"]
-texture = ExtResource("1_gaqco")
-texture_region_size = Vector2i(60, 60)
-
-[sub_resource type="TileSet" id="TileSet_fe1wu"]
-tile_size = Vector2i(32, 32)
-physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_tftiq")
 
 [node name="Lobby" type="Node2D" unique_id=916647507]
 metadata/_edit_group_ = true
@@ -53,7 +32,3 @@ metadata/_edit_group_ = true
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1672071959]
 tile_map_data = PackedByteArray("AAD/////AQABAAEAAADy//3/AAAhABsAAAD///H/AQACAAAAAAD4////AQAAAAIAAAD//w0AAQACAA4AAAAGAP//AQAOAAIAAAA=")
 tile_set = SubResource("TileSet_gx3r7")
-
-[node name="TileMapLayer2" type="TileMapLayer" parent="." unique_id=544256603]
-tile_map_data = PackedByteArray("AADk//H/AAAhABsAAAA=")
-tile_set = SubResource("TileSet_fe1wu")

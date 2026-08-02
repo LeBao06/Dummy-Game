@@ -4,7 +4,9 @@ extends Node
 signal task_completed(player_id: int, task_id: String)
 signal total_progress_updated(current_progress: float)
 signal all_tasks_completed
+@warning_ignore("UNUSED_SIGNAL")
 signal client_tasks_updated(task_resources: Array)
+
 
 # Dictionary holding every Task Resource, keyed by ID (the file name)
 var task_database: Dictionary = {} # Key: String (task_id), Value: TaskResource
