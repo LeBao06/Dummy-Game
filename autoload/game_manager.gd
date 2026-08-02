@@ -153,10 +153,34 @@ func _scene_for_state(state: Enums.GameState) -> String:
 ## Called on every peer (host included) whenever state changes, right
 ## after state_changed is emitted. Keeps this in one place so neither
 ## _set_state nor _receive_state need to duplicate the scene logic.
-func _apply_scene_for_state(state: Enums.GameState) -> void:
+func _apply_scene_for_state(state: Enums.GameState) -> void: ## the old one changes the whole scene, which makes a bug
 	var target_scene := _scene_for_state(state)
-	if target_scene != "":
-		get_tree().change_scene_to_file(target_scene)
+	var main_game := get_tree().current_scene
+	var lobby_ui := main_game.get_node("LobbyUI")
+	var gameplay_ui := main_game.get_node("GameplayUI")
+	
+	if target_scene == "":
+		return
+
+	var scene_container := get_tree().current_scene.get_node("SceneContainer")
+	
+	for child in scene_container.get_children():
+		child.queue_free()
+	
+	
+	## Toggling UI
+	lobby_ui.visible = (state == Enums.GameState.LOBBY)
+	gameplay_ui.visible = (state == Enums.GameState.PLAYING)
+	print("GameplayUI visible = ", gameplay_ui.visible)
+	
+	if target_scene == "":
+		return
+
+	for child in scene_container.get_children():
+		child.queue_free()
+
+	var new_content: PackedScene = load(target_scene)
+	scene_container.add_child(new_content.instantiate())
 
 # ==========================================
 # --- NETWORK SYNC (state + result broadcast to clients) ---

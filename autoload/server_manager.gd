@@ -85,7 +85,7 @@ func assign_roles(player_ids: Array = PlayerManager.players_state.keys()) -> voi
 			assigned_role = Enums.Role.IMPOSTOR
 		
 		# 1. Update the state on the Server (via PlayerManager, not a direct write)
-		PlayerManager.set_role(id, assigned_role)
+		PlayerManager.set_role(id, assigned_role) 
 		
 		# 2. Send the Role to the Client. The Host handles it directly,
 		#    no need for an RPC to itself.
@@ -104,7 +104,9 @@ func assign_tasks(player_ids: Array = PlayerManager.players_state.keys()) -> voi
 	for id in player_ids:
 		if PlayerManager.get_role(id) == Enums.Role.CREWMATE:
 			crewmate_count += 1
-		
+	
+	#Get all tasks
+	var fixed_task_ids: Array[String] = TaskManager.get_all_task_ids()
 	# Total number of tasks to complete this match (used for the progress bar)
 	TaskManager.total_tasks_count = crewmate_count * tasks_per_crewmate
 
@@ -113,14 +115,15 @@ func assign_tasks(player_ids: Array = PlayerManager.players_state.keys()) -> voi
 		var assigned_task_ids: Array[String] = []
 		
 		if role == Enums.Role.CREWMATE:
-			# Pick random task IDs from TaskManager
-			assigned_task_ids = TaskManager.get_random_task_ids(tasks_per_crewmate)
+			## Pick random task IDs from TaskManager
+			#assigned_task_ids = TaskManager.get_random_task_ids(tasks_per_crewmate)
+			assigned_task_ids = fixed_task_ids
 		else:
 			# Impostors get fake task IDs (or their own dedicated fake task list)
 			assigned_task_ids = ["fake_task_1"]
 		
 		# Update the player's task list via PlayerManager (not a direct write)
-		PlayerManager.set_assigned_tasks(id, assigned_task_ids)
+		# PlayerManager.set_assigned_tasks(id, assigned_task_ids)
 		
 		# ONLY SEND THE ID LIST OVER THE NETWORK (great bandwidth optimization!)
 		if id == Constants.HOST_ID:
@@ -185,15 +188,15 @@ func receive_task_list(task_ids: Array) -> void:
 	var my_id = multiplayer.get_unique_id()
 	print("[Peer %d] Received Task ID list from Server: " % my_id, task_ids)
 
-	# The client resolves full task info from the IDs itself, for rendering the UI
-	var task_resources: Array = []
-	for id in task_ids:
-		var task_res = TaskManager.get_task_info(id)
-		if task_res:
-			task_resources.append(task_res)
+	## The client resolves full task info from the IDs itself, for rendering the UI
+	#var task_resources: Array = [] - TaskManager.get_task_info handled it
+	#for id in task_ids:
+		#var task_res = TaskManager.get_task_info(id)
+		#if task_res:
+			#task_resources.append(task_res)
 	
 	# Store the resolved data on the local player
-	PlayerManager.set_assigned_tasks(my_id, task_resources)
+	PlayerManager.set_assigned_tasks(my_id, task_ids)
 
 @rpc("authority", "call_local", "reliable")
 func _sync_players_state(updated_state: Dictionary) -> void:

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TaskResource" format=3 uid="uid://d11jnnwwj0jtl"]
+
+[ext_resource type="Script" uid="uid://b28w3eeo05fdr" path="res://entities/tasks/task_resource.gd" id="1_urra7"]
+
+[resource]
+script = ExtResource("1_urra7")
+task_id = "task_toilet"
+room = "Toilet"
+metadata/_custom_type_script = "uid://b28w3eeo05fdr"

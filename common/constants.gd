@@ -46,7 +46,7 @@ const SKIP_VOTE: int = -1
 const WAITING_ROOM = "res://scenes/waiting_room/lobby_scene.tscn"
 
 
-const GAMEPLAY_SCENE = "res://scenes/game_room/main_game.tscn"
+const GAMEPLAY_SCENE = "res://scenes/gameplay_room/gameplay.tscn"
 
 const SEARCH_LOBBY = "res://scenes/lobby_menu/lobby_menu.tscn"
 const MAIN_MENU = "res://scenes/main_menu/main_menu.tscn"
