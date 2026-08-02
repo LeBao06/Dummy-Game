@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dfyt5qq6v62fn"]
+
+[ext_resource type="Script" uid="uid://c2tfyjw8xenal" path="res://entities/tasks/resources/interactable_clothes.gd" id="1_8yqcw"]
+[ext_resource type="Texture2D" uid="uid://btsinukbqwasl" path="res://assets/map_elements/dressingRoom/clothes_hanger.PNG" id="2_bo5m5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1kdam"]
+size = Vector2(51, 131)
+
+[node name="InteractableClothes" type="Area2D" unique_id=1195739536]
+script = ExtResource("1_8yqcw")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1312847728]
+texture = ExtResource("2_bo5m5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=544753918]
+position = Vector2(5.5, 0.5)
+shape = SubResource("RectangleShape2D_1kdam")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

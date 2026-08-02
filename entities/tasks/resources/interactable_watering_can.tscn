@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://ceorrqe8xfj5r"]
+
+[ext_resource type="Script" uid="uid://dvoh0g5pgs1u7" path="res://entities/tasks/resources/interactable_watering_can.gd" id="1_omrd7"]
+[ext_resource type="Texture2D" uid="uid://dh0chbxmwbijt" path="res://assets/map_elements/garden/watering pot.PNG" id="2_xvmom"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1kdam"]
+size = Vector2(44, 35)
+
+[node name="InteractableWateringCan" type="Area2D" unique_id=633681341]
+script = ExtResource("1_omrd7")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1287717469]
+position = Vector2(0.5, 0)
+scale = Vector2(0.98333335, 1)
+texture = ExtResource("2_xvmom")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2048907342]
+position = Vector2(6, -5.5)
+shape = SubResource("RectangleShape2D_1kdam")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
