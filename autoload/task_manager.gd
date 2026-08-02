@@ -50,13 +50,24 @@ func _load_all_task_resources() -> void:
 # 2. GET DATA FOR A SINGLE TASK
 func get_task_info(task_id: String) -> TaskResource:
 	return task_database.get(task_id, null)
-
+	
+# 2b. GET ALL TASK IDS (fixed list, no randomization)
+func get_all_task_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for key in task_database.keys():
+		ids.append(key)
+	return ids
 
 # 3. CALLED WHEN A PLAYER COMPLETES A TASK
 ## NOTE: This should only ever be called from server-authoritative code
 ## (ServerManager) after it has validated the task belongs to the player
 ## and hasn't already been completed. TaskManager itself does no validation.
 func complete_task(player_id: int, task_id: String) -> void:
+	# Get the actual task
+	var task := get_task_info(task_id)
+	if task:
+		task.is_completed = true
+		
 	completed_tasks_count += 1
 	var progress = float(completed_tasks_count) / float(max(1, total_tasks_count))
 
@@ -69,18 +80,18 @@ func complete_task(player_id: int, task_id: String) -> void:
 		all_tasks_completed.emit()
 
 
-# 4. RANDOM TASKS
-func get_random_task_ids(amount: int = 1) -> Array[String]:
-	var all_ids = task_database.keys()
-	all_ids.shuffle() # Shuffle the ID list
-
-	var result: Array[String] = []
-	var count = min(amount, all_ids.size()) # Avoid requesting more tasks than exist
-
-	for i in range(count):
-		result.append(all_ids[i])
-
-	return result
+## 4. RANDOM TASKS - for now fixed tasks, no randomized
+#func get_random_task_ids(amount: int = 1) -> Array[String]:
+	#var all_ids = task_database.keys()
+	#all_ids.shuffle() # Shuffle the ID list
+#
+	#var result: Array[String] = []
+	#var count = min(amount, all_ids.size()) # Avoid requesting more tasks than exist
+#
+	#for i in range(count):
+		#result.append(all_ids[i])
+#
+	#return result
 
 
 # 5. RESET (called when leaving the game / ending a match, so stats don't

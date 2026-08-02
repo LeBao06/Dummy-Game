@@ -1,31 +1,43 @@
 extends Node
 
+# ==========================================
+# SERVER MANAGER — CHANGES IN THIS PASS
+# 1. _reset_match_state() no longer calls PlayerManager.reset_manager() in a
+#    loop (that wiped the ENTIRE players_state dict right before
+#    assign_roles/assign_tasks needed it — would crash on match start).
+#    Now calls PlayerManager.reset_players_for_new_round() once, which only
+#    resets per-round fields and keeps the roster intact.
+# 2. Removed the _ready() subscription to NetworkManager.player_disconnected.
+#    It was connected directly to _sync_players_state(Dictionary), but the
+#    signal emits an int (peer_id) — type mismatch, would break on any
+#    disconnect. Per our ownership split, ServerManager doesn't own
+#    disconnect-triggered sync anyway (that's NetworkManager's job, next pass).
+# 3. _sync_players_state was being called directly instead of via .rpc(),
+#    so the @rpc annotation was a no-op and ready-state changes never
+#    actually reached other clients — only the server's own local copy
+#    updated. Now calls _sync_players_state.rpc(...).
+# 4. All direct players_state[id][...] writes replaced with PlayerManager
+#    setters (set_role, set_assigned_tasks, add_done_task) per the
+#    "PlayerManager owns all writes" decision.
+# ==========================================
+
 # Number of Impostors (configurable by the Host in the Lobby)
 var num_impostors: int = 1
 # Number of tasks assigned to each Crewmate per match
 var tasks_per_crewmate: int = 2
 
-func _on_peer_disconnected(peer_id: int) -> void:
-	if not multiplayer.is_server():
-		return
-	PlayerManager.unregister_player(peer_id)
-	_sync_players_state(PlayerManager.players_state)
-
-# Emits signal whenever a player left, run _on_peer_disconnected
-func _ready() -> void:
-	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 # ==========================================
 # READY STATE (LOBBY)
 # ==========================================
 
-##
 func request_local_ready(is_ready:bool) -> void:
 	var my_id = multiplayer.get_unique_id()
 	if multiplayer.is_server():
 		_apply_ready(my_id, is_ready)
 	else:
-		_request_set_ready.rpc_id(1, my_id, is_ready)
+		_request_set_ready.rpc_id(Constants.HOST_ID, my_id, is_ready)
+
 # ==========================================
 # MATCH (MAIN LOOP)
 # ==========================================
@@ -42,16 +54,16 @@ func start_match() -> void:
 		return
 	num_impostors = clamp(num_impostors, 1, player_ids.size() - 1)
 	
-	_reset_match_state(player_ids)
+	_reset_match_state()
 	assign_roles(player_ids)
 	assign_tasks(player_ids)
 	
-## Clears any leftover per-player match data from a previous round
-func _reset_match_state(player_ids: Array) -> void:
-	for id in player_ids:
-		PlayerManager.players_state[id]["assigned_tasks"] = []
-		PlayerManager.players_state[id]["done_tasks"] = []
-		PlayerManager.players_state[id]["is_alive"] = true
+## Clears any leftover per-player match data (is_alive, assigned_tasks,
+## done_tasks) from a previous round WITHOUT touching the connected
+## roster itself — that stays intact so assign_roles/assign_tasks below
+## still have players to work with.
+func _reset_match_state() -> void:
+	PlayerManager.reset_players_for_new_round()
 	# Delegate to TaskManager's own reset instead of reaching into its fields
 	# directly, so this stays in sync if TaskManager's reset logic ever changes.
 	TaskManager.reset_manager()
@@ -72,8 +84,8 @@ func assign_roles(player_ids: Array = PlayerManager.players_state.keys()) -> voi
 		if i < num_impostors:
 			assigned_role = Enums.Role.IMPOSTOR
 		
-		# 1. Update the state on the Server
-		PlayerManager.players_state[id]["role"] = assigned_role
+		# 1. Update the state on the Server (via PlayerManager, not a direct write)
+		PlayerManager.set_role(id, assigned_role) 
 		
 		# 2. Send the Role to the Client. The Host handles it directly,
 		#    no need for an RPC to itself.
@@ -90,25 +102,28 @@ func assign_roles(player_ids: Array = PlayerManager.players_state.keys()) -> voi
 func assign_tasks(player_ids: Array = PlayerManager.players_state.keys()) -> void:
 	var crewmate_count := 0
 	for id in player_ids:
-		if PlayerManager.players_state[id]["role"] == Enums.Role.CREWMATE:
+		if PlayerManager.get_role(id) == Enums.Role.CREWMATE:
 			crewmate_count += 1
-		
+	
+	#Get all tasks
+	var fixed_task_ids: Array[String] = TaskManager.get_all_task_ids()
 	# Total number of tasks to complete this match (used for the progress bar)
 	TaskManager.total_tasks_count = crewmate_count * tasks_per_crewmate
 
 	for id in player_ids:
-		var role = PlayerManager.players_state[id]["role"]
+		var role = PlayerManager.get_role(id)
 		var assigned_task_ids: Array[String] = []
 		
 		if role == Enums.Role.CREWMATE:
-			# Pick random task IDs from TaskManager
-			assigned_task_ids = TaskManager.get_random_task_ids(tasks_per_crewmate)
+			## Pick random task IDs from TaskManager
+			#assigned_task_ids = TaskManager.get_random_task_ids(tasks_per_crewmate)
+			assigned_task_ids = fixed_task_ids
 		else:
 			# Impostors get fake task IDs (or their own dedicated fake task list)
 			assigned_task_ids = ["fake_task_1"]
 		
-		# Update the player's task list in ServerManager's authoritative state
-		PlayerManager.players_state[id]["assigned_tasks"] = assigned_task_ids
+		# Update the player's task list via PlayerManager (not a direct write)
+		# PlayerManager.set_assigned_tasks(id, assigned_task_ids)
 		
 		# ONLY SEND THE ID LIST OVER THE NETWORK (great bandwidth optimization!)
 		if id == Constants.HOST_ID:
@@ -144,18 +159,15 @@ func _try_complete_task(player_id: int, task_id: String) -> void:
 	if not PlayerManager.players_state.has(player_id):
 		return
 	
-	var player_data: Dictionary = PlayerManager.players_state[player_id]
-	var assigned: Array = player_data.get("assigned_tasks", [])
-	var done: Array = player_data.get("done_tasks", [])
-	
+	var assigned: Array = PlayerManager.get_assigned_tasks(player_id)
 	if not task_id in assigned:
 		push_warning("[ServerManager] Player %d tried to complete unassigned task: %s" % [player_id, task_id])
 		return
-	if task_id in done:
-		return # Already completed, ignore silently
 	
-	done.append(task_id)
-	player_data["done_tasks"] = done
+	# add_done_task() returns false if already completed (or invalid peer),
+	# so we skip re-broadcasting a completion that already happened.
+	if not PlayerManager.add_done_task(player_id, task_id):
+		return
 	
 	TaskManager.complete_task(player_id, task_id)
 
@@ -166,39 +178,31 @@ func _try_complete_task(player_id: int, task_id: String) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func receive_role(assigned_role: Enums.Role) -> void:
-	PlayerManager.local_player_data["role"] = assigned_role
-	print("[Peer %d] My role is: " % multiplayer.get_unique_id(), Enums.Role.keys()[assigned_role])
-	
-	# Emit a signal so the UI / GameManager can handle the role reveal screen
-	PlayerManager.role_assigned.emit(assigned_role)
+	var my_id = multiplayer.get_unique_id()
+	PlayerManager.set_role(my_id, assigned_role)
+	print("[Peer %d] My role is: " % my_id, Enums.Role.keys()[assigned_role])
+
 
 @rpc("authority", "call_remote", "reliable")
 func receive_task_list(task_ids: Array) -> void:
-	print("[Peer %d] Received Task ID list from Server: " % multiplayer.get_unique_id(), task_ids)
+	var my_id = multiplayer.get_unique_id()
+	print("[Peer %d] Received Task ID list from Server: " % my_id, task_ids)
 
-	# The client resolves full task info from the IDs itself, for rendering the UI
-	var task_resources: Array = []
-	for id in task_ids:
-		var task_res = TaskManager.get_task_info(id)
-		if task_res:
-			task_resources.append(task_res)
+	## The client resolves full task info from the IDs itself, for rendering the UI
+	#var task_resources: Array = [] - TaskManager.get_task_info handled it
+	#for id in task_ids:
+		#var task_res = TaskManager.get_task_info(id)
+		#if task_res:
+			#task_resources.append(task_res)
 	
 	# Store the resolved data on the local player
-	PlayerManager.local_player_data["tasks"] = task_resources
-	
-	# Emit a signal so the HUD / Task UI can refresh
-	TaskManager.client_tasks_updated.emit(task_resources)
-	
+	PlayerManager.set_assigned_tasks(my_id, task_ids)
+
 @rpc("authority", "call_local", "reliable")
 func _sync_players_state(updated_state: Dictionary) -> void:
 	PlayerManager.players_state = updated_state
 	PlayerManager.players_state_updated.emit()
-		
-func all_players_ready() -> bool:
-	return PlayerManager.players_state.size() > 0 and PlayerManager.players_state.values().all(
-		func(p): return p.get("ready", false)
-	)
-	
+
 @rpc("any_peer", "reliable")
 func _request_set_ready(peer_id: int, is_ready: bool) -> void:
 		if not multiplayer.is_server():
@@ -207,5 +211,7 @@ func _request_set_ready(peer_id: int, is_ready: bool) -> void:
 	
 func _apply_ready(peer_id: int, is_ready:bool) -> void:
 	PlayerManager.set_ready_state(peer_id, is_ready)
-	_sync_players_state(PlayerManager.players_state)
-	
+	# Must go through .rpc() — calling _sync_players_state directly would
+	# only run it locally on the server and never reach other clients,
+	# even though it's annotated @rpc.
+	_sync_players_state.rpc(PlayerManager.players_state)

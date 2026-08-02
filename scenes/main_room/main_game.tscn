@@ -1,12 +1,59 @@
 [gd_scene format=3 uid="uid://j4brs24hrewh"]
 
-[ext_resource type="Script" uid="uid://demydplk6cjin" path="res://scenes/waiting_room/multiplayer_spawner.gd" id="1_dgpx4"]
+[ext_resource type="Script" uid="uid://drfowa301w48q" path="res://scenes/main_room/main_game.gd" id="1_cwqi1"]
+[ext_resource type="Script" uid="uid://demydplk6cjin" path="res://scenes/main_room/multiplayer_spawner.gd" id="1_dgpx4"]
 [ext_resource type="PackedScene" uid="uid://bycqqn40d3ngn" path="res://entities/player/player.tscn" id="2_cwqi1"]
+[ext_resource type="Script" uid="uid://bd8y0ybfvc53i" path="res://scenes/main_room/task_list.gd" id="4_07wv4"]
 
 [node name="MainGame" type="Node2D" unique_id=1745043348]
+script = ExtResource("1_cwqi1")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1179994567]
 _spawnable_scenes = PackedStringArray("uid://bycqqn40d3ngn")
 spawn_path = NodePath("..")
 script = ExtResource("1_dgpx4")
 network_player = ExtResource("2_cwqi1")
+
+[node name="LobbyUI" type="CanvasLayer" parent="." unique_id=1188591432]
+
+[node name="Container" type="VBoxContainer" parent="LobbyUI" unique_id=438828529]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StartButton" type="Button" parent="LobbyUI/Container" unique_id=977505485]
+layout_mode = 2
+text = "Start
+"
+
+[node name="ReadyButton" type="Button" parent="LobbyUI/Container" unique_id=2015799275]
+layout_mode = 2
+text = "Ready"
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="LobbyUI/Container" unique_id=264218524]
+layout_mode = 2
+
+[node name="SceneContainer" type="Node2D" parent="." unique_id=975847748]
+
+[node name="GameplayUI" type="CanvasLayer" parent="." unique_id=2134540081]
+visible = false
+script = ExtResource("4_07wv4")
+
+[node name="ProgressBar" type="ProgressBar" parent="GameplayUI" unique_id=523744191]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -8.0
+offset_right = 8.0
+offset_bottom = 27.0
+grow_horizontal = 2
+size_flags_horizontal = 8
+
+[node name="TaskContainer" type="FoldableContainer" parent="GameplayUI" unique_id=1162860933]
+unique_name_in_owner = true
+offset_right = 250.0
+offset_bottom = 200.0
+title = "Tasks List"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="GameplayUI/TaskContainer" unique_id=1871277472]
+layout_mode = 2
+bbcode_enabled = true

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b2i0hqufeo8wi"]
+
+[ext_resource type="Texture2D" uid="uid://dycnhtjb0k62m" path="res://assets/map_elements/artRoom/ground.png" id="1_x6yd6"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_situ5"]
+texture = ExtResource("1_x6yd6")
+texture_region_size = Vector2i(18, 18)
+0:0/size_in_atlas = Vector2i(15, 11)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_gx3r7"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_situ5")
+
+[node name="ArtRoom" type="Node2D" unique_id=1973338249]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1007906393]
+tile_map_data = PackedByteArray(0, 0, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+tile_set = SubResource("TileSet_gx3r7")
