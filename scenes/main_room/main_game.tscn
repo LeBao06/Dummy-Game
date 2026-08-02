@@ -10,50 +10,75 @@ script = ExtResource("1_cwqi1")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1179994567]
 _spawnable_scenes = PackedStringArray("uid://bycqqn40d3ngn")
-spawn_path = NodePath("..")
+spawn_path = NodePath("../World/PlayerContainer")
 script = ExtResource("1_dgpx4")
 network_player = ExtResource("2_cwqi1")
 
-[node name="LobbyUI" type="CanvasLayer" parent="." unique_id=1188591432]
+[node name="World" type="Node2D" parent="." unique_id=589611903]
+y_sort_enabled = true
 
-[node name="Container" type="VBoxContainer" parent="LobbyUI" unique_id=438828529]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="SceneContainer" type="Node2D" parent="World" unique_id=975847748]
 
-[node name="StartButton" type="Button" parent="LobbyUI/Container" unique_id=977505485]
+[node name="PlayerContainer" type="Node2D" parent="World" unique_id=1708423695]
+y_sort_enabled = true
+
+[node name="UI" type="Node2D" parent="." unique_id=1308061047]
+
+[node name="LobbyUI" type="CanvasLayer" parent="UI" unique_id=1188591432]
+
+[node name="Control" type="Control" parent="UI/LobbyUI" unique_id=809016427]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/LobbyUI/Control" unique_id=1265717084]
+layout_mode = 0
+offset_right = 316.0
+offset_bottom = 168.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/LobbyUI/Control/PanelContainer" unique_id=438828529]
 layout_mode = 2
-text = "Start
-"
+theme_override_constants/separation = 4
 
-[node name="ReadyButton" type="Button" parent="LobbyUI/Container" unique_id=2015799275]
+[node name="StartButton" type="Button" parent="UI/LobbyUI/Control/PanelContainer/VBoxContainer" unique_id=977505485]
+layout_mode = 2
+text = "Start"
+
+[node name="ReadyButton" type="Button" parent="UI/LobbyUI/Control/PanelContainer/VBoxContainer" unique_id=2015799275]
 layout_mode = 2
 text = "Ready"
 
-[node name="PlayerListContainer" type="VBoxContainer" parent="LobbyUI/Container" unique_id=264218524]
+[node name="PlayerListContainer" type="VBoxContainer" parent="UI/LobbyUI/Control/PanelContainer/VBoxContainer" unique_id=264218524]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="SceneContainer" type="Node2D" parent="." unique_id=975847748]
-
-[node name="GameplayUI" type="CanvasLayer" parent="." unique_id=2134540081]
+[node name="GameplayUI" type="CanvasLayer" parent="UI" unique_id=2134540081]
 visible = false
 script = ExtResource("4_07wv4")
 
-[node name="ProgressBar" type="ProgressBar" parent="GameplayUI" unique_id=523744191]
+[node name="ProgressBar" type="ProgressBar" parent="UI/GameplayUI" unique_id=523744191]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -8.0
-offset_right = 8.0
+offset_left = -65.0
+offset_right = 34.5
 offset_bottom = 27.0
 grow_horizontal = 2
 size_flags_horizontal = 8
 
-[node name="TaskContainer" type="FoldableContainer" parent="GameplayUI" unique_id=1162860933]
+[node name="TaskContainer" type="FoldableContainer" parent="UI/GameplayUI" unique_id=1162860933]
 unique_name_in_owner = true
-offset_right = 250.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
 offset_bottom = 200.0
+grow_horizontal = 0
 title = "Tasks List"
 
-[node name="RichTextLabel" type="RichTextLabel" parent="GameplayUI/TaskContainer" unique_id=1871277472]
+[node name="RichTextLabel" type="RichTextLabel" parent="UI/GameplayUI/TaskContainer" unique_id=1871277472]
 layout_mode = 2
 bbcode_enabled = true

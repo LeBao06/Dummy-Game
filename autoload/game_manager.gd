@@ -26,9 +26,12 @@ func _ready() -> void:
 	NetworkManager.player_disconnected.connect(_on_player_disconnected)
 	TaskManager.all_tasks_completed.connect(_on_all_tasks_completed)
 	state_changed.connect(_on_state_changed_debug_print)
-	
+
+
 func _on_state_changed_debug_print(new_state: Enums.GameState) -> void:
 	print("[GameManager] Peer %d — state changed to: %s" % [multiplayer.get_unique_id(), Enums.GameState.keys()[new_state]])
+
+
 # ==========================================
 # --- SERVER-AUTHORITATIVE STATE CONTROL ---
 # ==========================================
@@ -131,56 +134,56 @@ func _on_player_disconnected(_id: int) -> void:
 		push_warning("[GameManager] Not enough players remaining, aborting match.")
 		return_to_lobby()
 
-# ==========================================
-# --- SCENE TRANSISTION --- 
-# ==========================================
-
-
-## Maps a GameState to the scene that should be loaded for it, if any.
-## Returns "" for states that don't involve a scene change (MEETING/VOTING/
-## GAME_OVER might just show an overlay on top of gameplay.tscn instead).
-
-func _scene_for_state(state: Enums.GameState) -> String:
-	match state:
-		Enums.GameState.LOBBY:
-			return Constants.WAITING_ROOM
-		Enums.GameState.PLAYING:
-			return Constants.GAMEPLAY_SCENE
-		_:
-			return "" # MEETING, VOTING, GAME_OVER: handled as overlays, no scene swap
-			
-			
-## Called on every peer (host included) whenever state changes, right
-## after state_changed is emitted. Keeps this in one place so neither
-## _set_state nor _receive_state need to duplicate the scene logic.
-func _apply_scene_for_state(state: Enums.GameState) -> void: ## the old one changes the whole scene, which makes a bug
-	var target_scene := _scene_for_state(state)
-	var main_game := get_tree().current_scene
-	var lobby_ui := main_game.get_node("LobbyUI")
-	var gameplay_ui := main_game.get_node("GameplayUI")
-	
-	if target_scene == "":
-		return
-
-	var scene_container := get_tree().current_scene.get_node("SceneContainer")
-	
-	for child in scene_container.get_children():
-		child.queue_free()
-	
-	
-	## Toggling UI
-	lobby_ui.visible = (state == Enums.GameState.LOBBY)
-	gameplay_ui.visible = (state == Enums.GameState.PLAYING)
-	print("GameplayUI visible = ", gameplay_ui.visible)
-	
-	if target_scene == "":
-		return
-
-	for child in scene_container.get_children():
-		child.queue_free()
-
-	var new_content: PackedScene = load(target_scene)
-	scene_container.add_child(new_content.instantiate())
+## ==========================================
+## --- SCENE TRANSISTION --- 
+## ==========================================
+#
+#
+### Maps a GameState to the scene that should be loaded for it, if any.
+### Returns "" for states that don't involve a scene change (MEETING/VOTING/
+### GAME_OVER might just show an overlay on top of gameplay.tscn instead).
+#
+#func _scene_for_state(state: Enums.GameState) -> String:
+	#match state:
+		#Enums.GameState.LOBBY:
+			#return Constants.WAITING_ROOM
+		#Enums.GameState.PLAYING:
+			#return Constants.GAMEPLAY_SCENE
+		#_:
+			#return "" # MEETING, VOTING, GAME_OVER: handled as overlays, no scene swap
+			#
+			#
+### Called on every peer (host included) whenever state changes, right
+### after state_changed is emitted. Keeps this in one place so neither
+### _set_state nor _receive_state need to duplicate the scene logic.
+#func _apply_scene_for_state(state: Enums.GameState) -> void: ## the old one changes the whole scene, which makes a bug
+	#var target_scene := _scene_for_state(state)
+	#var main_game := get_tree().current_scene
+	#var lobby_ui := main_game.get_node("LobbyUI")
+	#var gameplay_ui := main_game.get_node("GameplayUI")
+	#
+	#if target_scene == "":
+		#return
+#
+	#var scene_container := get_tree().current_scene.get_node("SceneContainer")
+	#
+	#for child in scene_container.get_children():
+		#child.queue_free()
+	#
+	#
+	### Toggling UI
+	#lobby_ui.visible = (state == Enums.GameState.LOBBY)
+	#gameplay_ui.visible = (state == Enums.GameState.PLAYING)
+	#print("GameplayUI visible = ", gameplay_ui.visible)
+	#
+	#if target_scene == "":
+		#return
+#
+	#for child in scene_container.get_children():
+		#child.queue_free()
+#
+	#var new_content: PackedScene = load(target_scene)
+	#scene_container.add_child(new_content.instantiate())
 
 # ==========================================
 # --- NETWORK SYNC (state + result broadcast to clients) ---
@@ -189,7 +192,7 @@ func _apply_scene_for_state(state: Enums.GameState) -> void: ## the old one chan
 func _set_state(new_state: Enums.GameState) -> void:
 	current_state = new_state
 	state_changed.emit(new_state)
-	_apply_scene_for_state(new_state)
+	#_apply_scene_for_state(new_state)
 	
 	if not multiplayer.is_server():
 		return
@@ -216,7 +219,7 @@ func _broadcast_match_ended(result: Enums.GameResult) -> void:
 func _receive_state(new_state: Enums.GameState) -> void:
 	current_state = new_state
 	state_changed.emit(new_state)
-	_apply_scene_for_state(new_state)
+	#_apply_scene_for_state(new_state)
 
 
 @rpc("authority", "call_remote", "reliable")

@@ -27,8 +27,24 @@ physics_layer_0/collision_layer = 1
 sources/1 = SubResource("TileSetAtlasSource_ww14p")
 
 [node name="Lobby" type="Node2D" unique_id=916647507]
-metadata/_edit_group_ = true
+y_sort_enabled = true
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1672071959]
+z_index = -1
+y_sort_enabled = true
 tile_map_data = PackedByteArray("AAD/////AQABAAEAAADy//3/AAAhABsAAAD///H/AQACAAAAAAD4////AQAAAAIAAAD//w0AAQACAA4AAAAGAP//AQAOAAIAAAA=")
 tile_set = SubResource("TileSet_gx3r7")
+
+[node name="SpawnPoints" type="Node2D" parent="." unique_id=565712369]
+
+[node name="Spawn1" type="Marker2D" parent="SpawnPoints" unique_id=1127908510]
+position = Vector2(-230, -213)
+
+[node name="Spawn2" type="Marker2D" parent="SpawnPoints" unique_id=1257757774]
+position = Vector2(195, -220)
+
+[node name="Spawn3" type="Marker2D" parent="SpawnPoints" unique_id=1693162964]
+position = Vector2(197, 214)
+
+[node name="Spawn4" type="Marker2D" parent="SpawnPoints" unique_id=984389344]
+position = Vector2(-221, 216)
